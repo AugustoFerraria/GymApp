@@ -14,25 +14,10 @@ class Database {
         })
             .then(() => {
                 console.log('Database connection successful');
-                this._createCollection();
             })
             .catch(err => {
                 console.error('Database connection error:', err);
             });
-    }
-
-    _createCollection() {
-        const db = mongoose.connection;
-        db.on('open', () => {
-            db.db.listCollections({ name: 'GymApp' })
-                .next((err, collinfo) => {
-                    if (!collinfo) {
-                        db.createCollection('GymApp')
-                            .then(() => console.log('Collection GymApp created'))
-                            .catch(err => console.error('Error creating collection:', err));
-                    }
-                });
-        });
     }
 }
 
