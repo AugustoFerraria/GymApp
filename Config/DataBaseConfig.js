@@ -8,10 +8,7 @@ class Database {
     _connect() {
         const uri = process.env.MONGO_URI || 'mongodb://localhost:27017/GymApp';
 
-        mongoose.connect(uri, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        })
+        mongoose.connect(uri)
             .then(() => {
                 console.log('Database connection successful');
             })
