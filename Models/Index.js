@@ -1,4 +1,4 @@
-require('./Utente');
-require('./ProfilioUtente');
-require('./Progresso');
-require('./Esercizio');
+require('./user');
+require('./userProfile');
+require('./progress');
+require('./exercise');
