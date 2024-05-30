@@ -8,15 +8,15 @@ exports.register = async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { name, email, password } = req.body;
+  const { name, surname, username, password, age, height, weight, role } = req.body;
 
   try {
-    let user = await User.findOne({ email });
+    let user = await User.findOne({ username });
     if (user) {
-      return res.status(400).json({ msg: 'User already exists' });
+      return res.status(400).json({ msg: 'Nome utente già esistente' });
     }
 
-    user = new User({ name, email, password });
+    user = new User({ name, surname, username, password, age, height, weight, role });
     await user.save();
 
     const payload = {
@@ -35,8 +35,8 @@ exports.register = async (req, res) => {
       }
     );
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
+    console.error('Server error:', err.message);
+    res.status(500).send('Errore del server');
   }
 };
 
@@ -46,17 +46,17 @@ exports.login = async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { email, password } = req.body;
+  const { username, password } = req.body;
 
   try {
-    let user = await User.findOne({ email });
+    let user = await User.findOne({ username });
     if (!user) {
-      return res.status(400).json({ msg: 'Invalid credentials' });
+      return res.status(400).json({ msg: 'Credenziali non valide' });
     }
 
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-      return res.status(400).json({ msg: 'Invalid credentials' });
+      return res.status(400).json({ msg: 'Credenziali non valide' });
     }
 
     const payload = {
@@ -75,7 +75,7 @@ exports.login = async (req, res) => {
       }
     );
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
+    console.error('Server error:', err.message);
+    res.status(500).send('Errore del server');
   }
 };

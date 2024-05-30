@@ -7,8 +7,12 @@ router.post(
   '/register',
   [
     check('name', 'Name is required').not().isEmpty(),
-    check('email', 'Please include a valid email').isEmail(),
+    check('surname', 'Surname is required').not().isEmpty(),
+    check('username', 'Please include a valid username').not().isEmpty(),
     check('password', 'Please enter a password with 6 or more characters').isLength({ min: 6 }),
+    check('age', 'Age is required').isNumeric(),
+    check('weight', 'Weight is required').isFloat(),
+    check('height', 'Height is required').isFloat(),
   ],
   authController.register
 );
@@ -16,7 +20,7 @@ router.post(
 router.post(
   '/login',
   [
-    check('email', 'Please include a valid email').isEmail(),
+    check('username', 'Please include a valid username').not().isEmpty(),
     check('password', 'Password is required').exists(),
   ],
   authController.login
