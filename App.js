@@ -6,7 +6,6 @@ const app = express();
 const port = process.env.PORT || 3001;
 
 app.use(cors());
-
 app.use(express.json());
 
 const InitDb = require('./config/databaseConfig');
@@ -27,6 +26,6 @@ app.get('/api/protected', auth, (req, res) => {
 
 InitDb;
 
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+app.listen(port, 'localhost', () => {
+  console.log(`Server is running on http://localhost:${port}`);
 });

@@ -32,15 +32,30 @@ exports.getUsuarioById = async (req, res) => {
 };
 
 exports.updateUsuario = async (req, res) => {
-    try {
-        const usuario = await User.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
-        if (!usuario) {
-            return res.status(404).send();
-        }
-        res.status(200).send(usuario);
-    } catch (error) {
-        res.status(400).send(error);
+  try {
+    const updates = Object.keys(req.body);
+    const allowedUpdates = ['name', 'surname', 'age', 'height', 'weight'];
+    const isValidOperation = updates.every((update) =>
+      allowedUpdates.includes(update)
+    );
+
+    if (!isValidOperation) {
+      return res.status(400).send({ error: 'Invalid updates!' });
     }
+
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).send();
+    }
+
+    updates.forEach((update) => (user[update] = req.body[update]));
+    await user.save();
+
+    res.send(user);
+  } catch (error) {
+    res.status(400).send(error);
+  }
 };
 
 exports.deleteUsuario = async (req, res) => {
@@ -54,3 +69,12 @@ exports.deleteUsuario = async (req, res) => {
         res.status(500).send(error);
     }
 };
+
+exports.getCurrentUser = async (req, res) => {
+    try {
+      const user = await User.findById(req.user.id);
+      res.send(user);
+    } catch (error) {
+      res.status(500).send(error);
+    }
+  };  

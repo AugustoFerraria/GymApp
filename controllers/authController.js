@@ -2,26 +2,28 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
 
+// Registro de usuarios
 exports.register = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { name, surname, username, password, age, height, weight, role } = req.body;
+  const { name, surname, email, password, age, height, weight, role } = req.body;
 
   try {
-    let user = await User.findOne({ username });
+    let user = await User.findOne({ email });
     if (user) {
-      return res.status(400).json({ msg: 'Nome utente già esistente' });
+      return res.status(400).json({ msg: 'Email già esistente' });
     }
 
-    user = new User({ name, surname, username, password, age, height, weight, role });
+    user = new User({ name, surname, email, password, age, height, weight, role });
     await user.save();
 
     const payload = {
       user: {
         id: user.id,
+        role: user.role // Incluimos el rol en el payload
       },
     };
 
@@ -31,7 +33,7 @@ exports.register = async (req, res) => {
       { expiresIn: '1h' },
       (err, token) => {
         if (err) throw err;
-        res.json({ token });
+        res.json({ token, user: { role: user.role } }); // Devolvemos el token y el rol del usuario
       }
     );
   } catch (err) {
@@ -40,16 +42,17 @@ exports.register = async (req, res) => {
   }
 };
 
+// Inicio de sesión de usuarios
 exports.login = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
   try {
-    let user = await User.findOne({ username });
+    let user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ msg: 'Credenziali non valide' });
     }
@@ -62,6 +65,7 @@ exports.login = async (req, res) => {
     const payload = {
       user: {
         id: user.id,
+        role: user.role // Incluimos el rol en el payload
       },
     };
 
@@ -71,7 +75,7 @@ exports.login = async (req, res) => {
       { expiresIn: '1h' },
       (err, token) => {
         if (err) throw err;
-        res.json({ token });
+        res.json({ token, user: { role: user.role } }); // Devolvemos el token y el rol del usuario
       }
     );
   } catch (err) {

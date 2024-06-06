@@ -6,13 +6,10 @@ const authController = require('../controllers/authController');
 router.post(
   '/register',
   [
-    check('name', 'Name is required').not().isEmpty(),
-    check('surname', 'Surname is required').not().isEmpty(),
-    check('username', 'Please include a valid username').not().isEmpty(),
-    check('password', 'Please enter a password with 6 or more characters').isLength({ min: 6 }),
-    check('age', 'Age is required').isNumeric(),
-    check('weight', 'Weight is required').isFloat(),
-    check('height', 'Height is required').isFloat(),
+    check('name', 'Nome è obbligatorio').not().isEmpty(),
+    check('surname', 'Cognome è obbligatorio').not().isEmpty(),
+    check('email', 'Per favore includi una email valida').isEmail(),
+    check('password', 'La password deve avere almeno 6 caratteri').isLength({ min: 6 }),
   ],
   authController.register
 );
@@ -20,8 +17,8 @@ router.post(
 router.post(
   '/login',
   [
-    check('username', 'Please include a valid username').not().isEmpty(),
-    check('password', 'Password is required').exists(),
+    check('email', 'Per favore includi una email valida').isEmail(),
+    check('password', 'Password è obbligatorio').exists(),
   ],
   authController.login
 );
