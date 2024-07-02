@@ -9,7 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 const InitDb = require('./config/databaseConfig');
-const userRoutes = require('./routes/UserRoutes');
+const userRoutes = require('./routes/userRoutes');
 const progressRoutes = require('./routes/progressRoutes');
 const exerciseRoutes = require('./routes/exerciseRoutes');
 const authRoutes = require('./routes/authRoutes');
@@ -26,6 +26,6 @@ app.get('/api/protected', auth, (req, res) => {
 
 InitDb;
 
-app.listen(port, 'localhost', () => {
+app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });

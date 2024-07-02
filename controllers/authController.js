@@ -23,7 +23,7 @@ exports.register = async (req, res) => {
     const payload = {
       user: {
         id: user.id,
-        role: user.role // Incluimos el rol en el payload
+        role: user.role 
       },
     };
 
@@ -33,7 +33,7 @@ exports.register = async (req, res) => {
       { expiresIn: '1h' },
       (err, token) => {
         if (err) throw err;
-        res.json({ token, user: { role: user.role } }); // Devolvemos el token y el rol del usuario
+        res.json({ token, user: { role: user.role } }); 
       }
     );
   } catch (err) {
@@ -65,7 +65,7 @@ exports.login = async (req, res) => {
     const payload = {
       user: {
         id: user.id,
-        role: user.role // Incluimos el rol en el payload
+        role: user.role
       },
     };
 
@@ -75,7 +75,7 @@ exports.login = async (req, res) => {
       { expiresIn: '1h' },
       (err, token) => {
         if (err) throw err;
-        res.json({ token, user: { role: user.role } }); // Devolvemos el token y el rol del usuario
+        res.json({ token, user: { role: user.role } });
       }
     );
   } catch (err) {

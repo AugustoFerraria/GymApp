@@ -15,3 +15,10 @@ module.exports = function (req, res, next) {
     res.status(401).json({ msg: 'Token is not valid' });
   }
 };
+
+module.exports.isAdmin = function (req, res, next) {
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({ msg: 'Authorization denied, only admins can perform this action' });
+  }
+  next();
+};
