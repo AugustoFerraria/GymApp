@@ -8,4 +8,4 @@ const exerciseSchema = new mongoose.Schema({
   category: String
 });
 
-module.exports = mongoose.models.Exercise || mongoose.model('Exercise', exerciseSchema);
+module.exports = mongoose.model('Exercise', exerciseSchema);
