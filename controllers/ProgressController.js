@@ -10,7 +10,7 @@ exports.createProgress = async (req, res) => {
     const newProgress = new Progress({
       userId,
       exerciseId,
-      [type]: value, // Dynamically set the field based on type
+      [type]: value,
       date,
     });
     await newProgress.save();
@@ -22,7 +22,15 @@ exports.createProgress = async (req, res) => {
 
 exports.getProgresses = async (req, res) => {
   try {
-    const progresses = await Progress.find().populate("exerciseId");
+    const { userId, exerciseId } = req.query;
+    const filter = { userId };
+    if (exerciseId) {
+      filter.exerciseId = exerciseId;
+    }
+    const progresses = await Progress.find(filter).populate("exerciseId");
+    if (!progresses.length) {
+      return res.status(404).send({ message: "No progresses found" });
+    }
     res.status(200).send(progresses);
   } catch (error) {
     res.status(500).send(error);
@@ -31,9 +39,7 @@ exports.getProgresses = async (req, res) => {
 
 exports.getProgressById = async (req, res) => {
   try {
-    const progress = await Progress.findById(req.params.id).populate(
-      "exerciseId"
-    );
+    const progress = await Progress.findById(req.params.id).populate("exerciseId");
     if (!progress) {
       return res.status(404).send();
     }
@@ -65,38 +71,6 @@ exports.deleteProgress = async (req, res) => {
       return res.status(404).send();
     }
     res.status(200).send(progress);
-  } catch (error) {
-    res.status(500).send(error);
-  }
-};
-
-exports.getProgressesByUserId = async (req, res) => {
-  try {
-    const { userId, exerciseId } = req.query;
-    const filter = { userId };
-    if (exerciseId) {
-      filter.exerciseId = exerciseId;
-    }
-    const progresses = await Progress.find(filter).populate("exerciseId");
-    if (!progresses.length) {
-      return res
-        .status(404)
-        .send({ message: "No progresses found for this user" });
-    }
-    res.status(200).send(progresses);
-  } catch (error) {
-    res.status(500).send(error);
-  }
-};
-
-exports.getProgressesByUserIdAndExerciseId = async (req, res) => {
-  try {
-    const { userId, exerciseId } = req.query;
-    const progresses = await Progress.find({ userId, exerciseId }).populate('exerciseId');
-    if (!progresses) {
-      return res.status(404).send({ message: 'No progresses found for this user and exercise' });
-    }
-    res.status(200).send(progresses);
   } catch (error) {
     res.status(500).send(error);
   }
