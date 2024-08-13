@@ -1,4 +1,4 @@
 require('./User');
 require('./userProfile');
-require('./progress');
+require('./Progress');
 require('./Exercise');

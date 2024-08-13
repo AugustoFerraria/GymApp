@@ -9,7 +9,7 @@ exports.register = async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { name, surname, email, password, age, height, weight, role } = req.body;
+  const { name, surname, email, password, age, height, weight, role, professorId } = req.body;
 
   try {
     let user = await User.findOne({ email });
@@ -18,12 +18,21 @@ exports.register = async (req, res) => {
     }
 
     user = new User({ name, surname, email, password, age, height, weight, role });
+
+    if (role === 'user' && professorId) {
+      const professor = await User.findById(professorId);
+      if (!professor || professor.role !== 'admin') {
+        return res.status(400).json({ msg: 'Professor non valido' });
+      }
+      user.professor = professorId;
+    }
+
     await user.save();
 
     const payload = {
       user: {
         id: user.id,
-        role: user.role 
+        role: user.role
       },
     };
 
@@ -33,11 +42,11 @@ exports.register = async (req, res) => {
       { expiresIn: '1h' },
       (err, token) => {
         if (err) throw err;
-        res.json({ token, user: { role: user.role } }); 
+        res.json({ token, user: { role: user.role } });
       }
     );
   } catch (err) {
-    console.error('Server error:', err.message);
+    console.error('Errore del server:', err.message);
     res.status(500).send('Errore del server');
   }
 };
@@ -79,7 +88,7 @@ exports.login = async (req, res) => {
       }
     );
   } catch (err) {
-    console.error('Server error:', err.message);
+    console.error('Errore del server:', err.message);
     res.status(500).send('Errore del server');
   }
 };

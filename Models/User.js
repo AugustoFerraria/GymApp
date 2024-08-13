@@ -10,7 +10,8 @@ const userSchema = new mongoose.Schema({
   height: { type: Number },
   weight: { type: Number },
   role: { type: String, enum: ['admin', 'user'], default: 'user' },
-  registrationDate: { type: Date, default: Date.now }
+  registrationDate: { type: Date, default: Date.now },
+  professor: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 });
 
 userSchema.pre('save', async function (next) {

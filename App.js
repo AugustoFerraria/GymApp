@@ -9,7 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 const InitDb = require('./config/databaseConfig');
-const userRoutes = require('./routes/userRoutes');
+const userRoutes = require('./routes/UserRoutes');
 const progressRoutes = require('./routes/progressRoutes');
 const exerciseRoutes = require('./routes/exerciseRoutes');
 const authRoutes = require('./routes/authRoutes');
