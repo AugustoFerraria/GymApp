@@ -1,28 +1,46 @@
-const User = require('../models/User');
-const jwt = require('jsonwebtoken');
-const { validationResult } = require('express-validator');
+const User = require("../models/User");
+const jwt = require("jsonwebtoken");
+const { validationResult } = require("express-validator");
 
-// Registro de usuarios
 exports.register = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { name, surname, email, password, age, height, weight, role, professorId } = req.body;
+  const {
+    name,
+    surname,
+    email,
+    password,
+    age,
+    height,
+    weight,
+    role,
+    professorId,
+  } = req.body;
 
   try {
     let user = await User.findOne({ email });
     if (user) {
-      return res.status(400).json({ msg: 'Email già esistente' });
+      return res.status(400).json({ msg: "Email già esistente" });
     }
 
-    user = new User({ name, surname, email, password, age, height, weight, role });
+    user = new User({
+      name,
+      surname,
+      email,
+      password,
+      age,
+      height,
+      weight,
+      role,
+    });
 
-    if (role === 'user' && professorId) {
+    if (role === "user" && professorId) {
       const professor = await User.findById(professorId);
-      if (!professor || professor.role !== 'admin') {
-        return res.status(400).json({ msg: 'Professor non valido' });
+      if (!professor || professor.role !== "admin") {
+        return res.status(400).json({ msg: "Professor non valido" });
       }
       user.professor = professorId;
     }
@@ -32,26 +50,25 @@ exports.register = async (req, res) => {
     const payload = {
       user: {
         id: user.id,
-        role: user.role
+        role: user.role,
       },
     };
 
     jwt.sign(
       payload,
       process.env.JWT_SECRET,
-      { expiresIn: '1h' },
+      { expiresIn: "1h" },
       (err, token) => {
         if (err) throw err;
         res.json({ token, user: { role: user.role } });
       }
     );
   } catch (err) {
-    console.error('Errore del server:', err.message);
-    res.status(500).send('Errore del server');
+    console.error("Errore del server:", err.message);
+    res.status(500).send("Errore del server");
   }
 };
 
-// Inicio de sesión de usuarios
 exports.login = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -63,32 +80,45 @@ exports.login = async (req, res) => {
   try {
     let user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ msg: 'Credenziali non valide' });
+      return res.status(400).json({ msg: "Credenziali non valide" });
     }
 
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-      return res.status(400).json({ msg: 'Credenziali non valide' });
+      return res.status(400).json({ msg: "Credenziali non valide" });
     }
 
     const payload = {
       user: {
         id: user.id,
-        role: user.role
+        role: user.role,
       },
     };
 
     jwt.sign(
       payload,
       process.env.JWT_SECRET,
-      { expiresIn: '1h' },
+      { expiresIn: "1h" },
       (err, token) => {
         if (err) throw err;
         res.json({ token, user: { role: user.role } });
       }
     );
   } catch (err) {
-    console.error('Errore del server:', err.message);
-    res.status(500).send('Errore del server');
+    console.error("Errore del server:", err.message);
+    res.status(500).send("Errore del server");
+  }
+};
+
+exports.getAuthenticatedUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("-password");
+    if (!user) {
+      return res.status(404).json({ msg: "Utente non trovato" });
+    }
+    res.json(user);
+  } catch (err) {
+    console.error("Errore del server:", err.message);
+    res.status(500).send("Errore del server");
   }
 };
