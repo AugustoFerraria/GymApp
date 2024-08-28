@@ -14,6 +14,8 @@ const RoutineSchema = new Schema({
         required: true,
       },
       quantity: { type: Number, required: true },
+      sets: { type: Number, required: true },
+      notes: { type: String },
     },
   ],
   videos: [

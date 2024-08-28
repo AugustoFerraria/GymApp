@@ -105,9 +105,9 @@ exports.deleteRoutine = async (req, res) => {
       return res.status(404).json({ msg: "Routine non trovata" });
     }
 
-    await routine.remove();
+    await Routine.findByIdAndDelete(id);
 
-    res.json({ msg: "Routine eliminata" });
+    res.json({ msg: "Routine eliminata con successo" });
   } catch (error) {
     console.error("Error al eliminar la rutina:", error);
     res.status(500).json({ msg: "Errore del server" });
